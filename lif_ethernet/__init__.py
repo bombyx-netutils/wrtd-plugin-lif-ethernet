@@ -6,13 +6,13 @@ import socket
 import fcntl
 
 
-def get_plugin_list(self):
+def get_plugin_list():
     return [
         "ethernet",
     ]
 
 
-def get_plugin(self, name):
+def get_plugin(name):
     if name == "ethernet":
         return _PluginObject()
     else:
