@@ -31,6 +31,9 @@ class _PluginObject:
     def stop(self):
         pass
 
+    def get_bridge(self):
+        return None
+
     def interface_appear(self, ifname):
         if ifname.startswith("en"):
             _Util.ifUp(ifname)
