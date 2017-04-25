@@ -22,7 +22,7 @@ def get_plugin(name):
 
 class _PluginObject:
 
-    def init2(self, instanceName, cfg, tmpDir):
+    def init2(self, instanceName, cfg, tmpDir, varDir):
         assert instanceName == ""
 
     def start(self):
