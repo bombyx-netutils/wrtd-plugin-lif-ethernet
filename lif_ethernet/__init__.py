@@ -4,6 +4,7 @@
 import struct
 import socket
 import fcntl
+import pyroute2
 
 
 def get_plugin_list():
@@ -21,9 +22,8 @@ def get_plugin(name):
 
 class _PluginObject:
 
-    def init2(self, instanceName, cfg, brname, tmpDir):
+    def init2(self, instanceName, cfg, tmpDir):
         assert instanceName == ""
-        self.brname = brname
 
     def start(self):
         pass
@@ -34,10 +34,12 @@ class _PluginObject:
     def get_bridge(self):
         return None
 
-    def interface_appear(self, ifname):
+    def interface_appear(self, bridge, ifname):
         if ifname.startswith("en"):
-            _Util.ifUp(ifname)
-            _Util.addInterfaceToBridge(self.brname, ifname)
+            with pyroute2.IPRoute() as ip:
+                idx = ip.link_lookup(ifname=ifname)[0]
+                ip.link("set", index=idx, state="up")
+            _Util.addInterfaceToBridge(bridge.get_name(), ifname)
             return True
         else:
             return False
@@ -47,19 +49,6 @@ class _PluginObject:
 
 
 class _Util:
-
-    @staticmethod
-    def ifUp(ifname):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            ifreq = struct.pack("16sh", ifname, 0)
-            ret = fcntl.ioctl(s.fileno(), 0x8913, ifreq)
-            flags = struct.unpack("16sh", ret)[1]                   # SIOCGIFFLAGS
-            flags |= 0x1
-            ifreq = struct.pack("16sh", ifname, flags)
-            fcntl.ioctl(s.fileno(), 0x8914, ifreq)                  # SIOCSIFFLAGS
-        finally:
-            s.close()
 
     @staticmethod
     def addInterfaceToBridge(brname, ifname):
