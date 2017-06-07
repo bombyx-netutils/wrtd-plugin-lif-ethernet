@@ -22,7 +22,7 @@ def get_plugin(name):
 
 class _PluginObject:
 
-    def init2(self, instanceName, cfg, tmpDir, varDir, firewallAllowFunc):
+    def init2(self, instanceName, cfg, tmpDir, varDir):
         assert instanceName == ""
 
     def start(self):
@@ -30,9 +30,6 @@ class _PluginObject:
 
     def stop(self):
         pass
-
-    def get_bridge(self):
-        return None
 
     def interface_appear(self, bridge, ifname):
         if ifname.startswith("en"):
