@@ -29,10 +29,12 @@ class _PluginObject:
         self.intfList = []
 
     def start(self):
-        pass
+        self.logger.info("Started.")
 
     def stop(self):
-        pass
+        for ifname in self.intfList:
+            self.logger.info("Interface \"%s\" unmanaged." % (ifname))
+        self.logger.info("Stopped.")
 
     def interface_appear(self, bridge, ifname):
         if ifname.startswith("en"):
