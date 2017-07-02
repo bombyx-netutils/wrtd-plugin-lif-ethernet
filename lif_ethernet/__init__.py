@@ -3,6 +3,7 @@
 
 import struct
 import socket
+import logging
 import fcntl
 import pyroute2
 
@@ -24,6 +25,8 @@ class _PluginObject:
 
     def init2(self, instanceName, cfg, tmpDir, varDir):
         assert instanceName == ""
+        self.logger = logging.getLogger(self.__module__ + "." + self.__class__.__name__)
+        self.intfList = []
 
     def start(self):
         pass
@@ -37,12 +40,15 @@ class _PluginObject:
                 idx = ip.link_lookup(ifname=ifname)[0]
                 ip.link("set", index=idx, state="up")
             _Util.addInterfaceToBridge(bridge.get_name(), ifname)
+            self.intfList.append(ifname)
+            self.logger.info("Interface \"%s\" managed." % (ifname))
             return True
-        else:
-            return False
+        return False
 
     def interface_disappear(self, ifname):
-        pass
+        if ifname in self.intfList:
+            self.intfList.remove(ifname)
+            self.logger.info("Interface \"%s\" unmanaged." % (ifname))
 
 
 class _Util:
